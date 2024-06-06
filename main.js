@@ -28,11 +28,27 @@ function getCurrencyDisplay(currencyCode) {
     return '';
 }
 
+function calculateCost(discountedRate, fullPrice, usageData, commitment) {
+    let totalCost = 0;
+    for (let usage of usageData) {
+        if (usage <= commitment) {
+            totalCost += commitment * discountedRate;
+        } else {
+            totalCost += commitment * discountedRate + (usage - commitment) * fullPrice;
+        }
+    }
+    return totalCost;
+}
+
 function calculateOptimalCommitment() {
   // Get the inputs
   const usageData = document.getElementById('usage').value.split(',').map(Number);
   const discountedRate = parseFloat(document.getElementById('discountedRate').value);
   const fullPrice = parseFloat(document.getElementById('fullPrice').value);
+
+  let _calculateCost = function(commitment) {
+      return calculateCost(discountedRate, fullPrice, usageData, commitment);
+  }
 
   const minCommitment = Math.min(...usageData);
   const maxCommitment = Math.max(...usageData);
@@ -43,15 +59,8 @@ function calculateOptimalCommitment() {
 
   // Iterate through possible commitment levels
   for (let commitment = minCommitment; commitment <= maxCommitment; commitment += step) {
-    let totalCost = 0;
-
-    for (let usage of usageData) {
-      if (usage <= commitment) {
-        totalCost += commitment * discountedRate;
-      } else {
-        totalCost += commitment * discountedRate + (usage - commitment) * fullPrice;
-      }
-    }
+    
+    let totalCost = _calculateCost(commitment);
 
     if (totalCost < minTotalCost) {
       minTotalCost = totalCost;
@@ -63,8 +72,14 @@ function calculateOptimalCommitment() {
   let currencyDisplay = getCurrencyDisplay(currency);
 
   // Display the result
-  document.getElementById('result').innerText = 
-    `Optimal Commitment Level: ${currencyDisplay}${optimalCommitment.toFixed(2)}\nMinimum Total Cost: ${currencyDisplay}${minTotalCost.toFixed(2)}`;
+  document.getElementById('result').innerText = [
+      `Optimal Commitment Level: ${optimalCommitment.toFixed(0)}`,
+      `Minimum Total Cost: ${currencyDisplay}${minTotalCost.toFixed(2)}`,
+      `Average Cost: ${currencyDisplay}${(minTotalCost / usageData.length).toFixed(2)}`,
+      '',
+      `One lower (${optimalCommitment - 1}) cost: ${currencyDisplay}${_calculateCost(discountedRate).toFixed(2)}`,
+      `One higher (${optimalCommitment + 1}) cost: ${currencyDisplay}${_calculateCost(optimalCommitment + 1).toFixed(2)}`,
+  ].join("\n");
 
   // And show the link to this result using the querystring
   function showLink() {

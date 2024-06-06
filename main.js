@@ -109,6 +109,7 @@ function calculateOptimalCommitment() {
   } else {
       chart.data = {
           datasets: [{
+              label: 'Total cost',
               data: evaluatedCommitments,
           }],
       };

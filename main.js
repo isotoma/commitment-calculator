@@ -28,6 +28,8 @@ function getCurrencyDisplay(currencyCode) {
     return '';
 }
 
+let chart = undefined;
+
 function calculateCost(discountedRate, fullPrice, usageData, commitment) {
     let totalCost = 0;
     for (let usage of usageData) {
@@ -57,10 +59,17 @@ function calculateOptimalCommitment() {
   let optimalCommitment = minCommitment;
   let minTotalCost = Infinity;
 
+  let evaluatedCommitments = [];
+
   // Iterate through possible commitment levels
   for (let commitment = minCommitment; commitment <= maxCommitment; commitment += step) {
     
     let totalCost = _calculateCost(commitment);
+
+    evaluatedCommitments.push({
+        commitment,
+        totalCost,
+    });
 
     if (totalCost < minTotalCost) {
       minTotalCost = totalCost;
@@ -80,6 +89,32 @@ function calculateOptimalCommitment() {
       `One lower (${optimalCommitment - 1}) cost: ${currencyDisplay}${_calculateCost(optimalCommitment - 1).toFixed(2)}`,
       `One higher (${optimalCommitment + 1}) cost: ${currencyDisplay}${_calculateCost(optimalCommitment + 1).toFixed(2)}`,
   ].join("\n");
+
+  if (!chart) {
+      chart = new Chart(document.getElementById('chart'), {
+          type: 'scatter',
+          data: {
+              datasets: [{
+                  label: 'Total cost',
+                  data: evaluatedCommitments,
+              }],
+          },
+          options: {
+              parsing: {
+                  xAxisKey: 'commitment',
+                  yAxisKey: 'totalCost',
+              },
+          },
+      });
+  } else {
+      chart.data = {
+          datasets: [{
+              data: evaluatedCommitments,
+          }],
+      };
+      chart.update();
+  }
+  
 
   // And show the link to this result using the querystring
   function showLink() {

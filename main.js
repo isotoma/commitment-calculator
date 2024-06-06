@@ -77,7 +77,7 @@ function calculateOptimalCommitment() {
       `Minimum Total Cost: ${currencyDisplay}${minTotalCost.toFixed(2)}`,
       `Average Cost: ${currencyDisplay}${(minTotalCost / usageData.length).toFixed(2)}`,
       '',
-      `One lower (${optimalCommitment - 1}) cost: ${currencyDisplay}${_calculateCost(discountedRate).toFixed(2)}`,
+      `One lower (${optimalCommitment - 1}) cost: ${currencyDisplay}${_calculateCost(optimalCommitment - 1).toFixed(2)}`,
       `One higher (${optimalCommitment + 1}) cost: ${currencyDisplay}${_calculateCost(optimalCommitment + 1).toFixed(2)}`,
   ].join("\n");
 

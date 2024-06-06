@@ -25,57 +25,28 @@
 <body>
   <h1>Optimal Commitment Calculator</h1>
   <form id="calculator-form">
+    <label for="currency">Currency:</label>
+    <select id="currency" name="currency">
+        <option value="USD">$</option>
+        <option value="GBP">£</option>
+    </select>
+
     <label for="usage">Historical Usage (comma separated):</label>
     <input type="text" id="usage" required>
     
-    <label for="discountedRate">Discounted Rate (£):</label>
+    <label for="discountedRate">Discounted Rate:</label>
     <input type="number" id="discountedRate" step="0.01" required>
     
-    <label for="fullPrice">Full Price (£):</label>
+    <label for="fullPrice">Full Price:</label>
     <input type="number" id="fullPrice" step="0.01" required>
     
     <button type="button" onclick="calculateOptimalCommitment()">Calculate</button>
   </form>
   
   <div class="result" id="result"></div>
+  <a class="result" id="link">Link</a>
 
-  <script>
-    function calculateOptimalCommitment() {
-      // Get the inputs
-      const usageData = document.getElementById('usage').value.split(',').map(Number);
-      const discountedRate = parseFloat(document.getElementById('discountedRate').value);
-      const fullPrice = parseFloat(document.getElementById('fullPrice').value);
-      
-      const minCommitment = Math.min(...usageData);
-      const maxCommitment = Math.max(...usageData);
-      const step = 10; // Adjust step size as needed
-
-      let optimalCommitment = minCommitment;
-      let minTotalCost = Infinity;
-      
-      // Iterate through possible commitment levels
-      for (let commitment = minCommitment; commitment <= maxCommitment; commitment += step) {
-        let totalCost = 0;
-        
-        for (let usage of usageData) {
-          if (usage <= commitment) {
-            totalCost += commitment * discountedRate;
-          } else {
-            totalCost += commitment * discountedRate + (usage - commitment) * fullPrice;
-          }
-        }
-        
-        if (totalCost < minTotalCost) {
-          minTotalCost = totalCost;
-          optimalCommitment = commitment;
-        }
-      }
-      
-      // Display the result
-      document.getElementById('result').innerText = 
-        `Optimal Commitment Level: £${optimalCommitment.toFixed(2)}\nMinimum Total Cost: £${minTotalCost.toFixed(2)}`;
-    }
-  </script>
+  <script src="./main.js"></script>
 </body>
 </html>
 

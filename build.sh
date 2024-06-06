@@ -6,7 +6,7 @@ main() {
     rm -rf build
     mkdir -p build
 
-    cp index.html build/
+    cp index.html main.js build/
 }
 
 cd "$repo_dir" && main "$@"
